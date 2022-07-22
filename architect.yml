@@ -1,0 +1,23 @@
+name: kotlin
+description: i have no idea what i'm doing
+
+interfaces:
+  app:
+    url: ${{ services.app.interfaces.main.url }}
+    ingress:
+      enabled: true
+
+services:
+  app:
+    interfaces:
+      main: 80
+    environment:
+      PORT: 80
+      HOST: 0.0.0.0
+    build:
+      context: .
+    debug:
+      environment:
+        PORT: 1024
+      interfaces:
+        main: 1024
