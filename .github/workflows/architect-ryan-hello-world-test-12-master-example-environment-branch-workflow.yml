@@ -1,5 +1,6 @@
 name: Architect master Branch Deployment
 
+
 on:
   push:
     branches:
