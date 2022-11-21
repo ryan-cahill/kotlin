@@ -16,7 +16,7 @@ env:
   PREVIEW_MAINLINE_BRANCH: master
   COMPONENT_FILE_PATH: architect.yml
   ARCHITECT_ACCOUNT: architect-ryan
-  CLUSTER_NAME: do-k8s
+  CLUSTER_NAME: architect
   ENVIRONMENT_TTL: --ttl=35hours
 
 jobs:
