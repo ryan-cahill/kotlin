@@ -1,0 +1,39 @@
+name: Architect master Branch Deployment
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  ARCHITECT_GENERATED: true
+  ARCHITECT_BRANCH: true
+  COMPONENT_FILE_PATH: architect.yml
+  ARCHITECT_ACCOUNT: architect-ryan
+  COMPONENT_NAME: kotlin-test
+  ENVIRONMENT_NAME: example-environment
+  BRANCH_NAME: master
+
+jobs:
+  architect_create_branch_deployments:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: crazy-max/ghaction-github-runtime@v2 # Exports internal envs for Github Actions. Required for register caching to work.
+      - name: Install Architect CLI
+        run: sudo npm install -g @architect-io/cli
+      - name: Set Architect API endpoint
+        run: architect config:set api_host https://api.dev.architect.io
+      - name: Set Architect registry endpoint
+        run: architect config:set registry_host registry.dev.architect.io
+      - name: Login to Architect Cloud
+        run: architect login -e ${{ secrets.ARCHITECT_EMAIL }} -p ${{ secrets.ARCHITECT_PASSWORD }} # These secrets were created on your behalf
+      - name: Register component w/ Architect
+        run: architect register ${{ env.COMPONENT_FILE_PATH }} -t latest
+      - name: Deploy component
+        run: architect deploy --auto-approve -e ${{ env.ENVIRONMENT_NAME }} ${{ env.COMPONENT_NAME }}:latest
