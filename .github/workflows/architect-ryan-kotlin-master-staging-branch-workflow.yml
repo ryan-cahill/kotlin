@@ -1,23 +1,26 @@
-name: Architect Production Deployment
+name: Architect master Branch Deployment
 
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+      - master
 
 env:
   ARCHITECT_GENERATED: true
-  ARCHITECT_PRODUCTION: true
+  ARCHITECT_BRANCH: true
   COMPONENT_FILE_PATH: architect.yml
   ARCHITECT_ACCOUNT: architect-ryan
   COMPONENT_NAME: kotlin
-  ENVIRONMENT_NAME: production
+  ENVIRONMENT_NAME: staging
+  BRANCH_NAME: master
 
 jobs:
-  architect_create_release:
+  architect_create_branch_deployments:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ env.BRANCH_NAME }}
       - uses: actions/setup-node@v3
         with:
           node-version: '16'

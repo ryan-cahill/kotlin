@@ -17,7 +17,7 @@ env:
   COMPONENT_FILE_PATH: architect.yml
   ARCHITECT_ACCOUNT: architect-ryan
   CLUSTER_NAME: architect
-  ENVIRONMENT_TTL: --ttl=35hours
+  ENVIRONMENT_TTL: 
 
 jobs:
   architect_remove_preview:
@@ -29,15 +29,11 @@ jobs:
         with:
           node-version: '16'
       - name: Install Architect CLI
-        run: sudo npm install -g @architect-io/cli
-      - name: Set Architect API endpoint
-        run: architect config:set api_host https://api.dev.architect.io
-      - name: Set Architect registry endpoint
-        run: architect config:set registry_host registry.dev.architect.io
+        run: npm install -g @architect-io/cli
       - name: Login to Architect Cloud
         run: architect login -e ${{ secrets.ARCHITECT_EMAIL }} -p ${{ secrets.ARCHITECT_PASSWORD }}
       - name: Remove preview environment
-        run: architect environment:destroy ${{ env.PREVIEW_TAG }} --auto-approve -f || exit 0
+        run: architect environment:destroy ${{ env.PREVIEW_TAG }} --auto-approve -f
   architect_create_preview:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
@@ -48,14 +44,10 @@ jobs:
           node-version: '16'
       - uses: crazy-max/ghaction-github-runtime@v2 # Exports internal envs for Github Actions. Required for register caching to work.
       - name: Install Architect CLI
-        run: sudo npm install -g @architect-io/cli
-      - name: Set Architect API endpoint
-        run: architect config:set api_host https://api.dev.architect.io
-      - name: Set Architect registry endpoint
-        run: architect config:set registry_host registry.dev.architect.io
+        run: npm install -g @architect-io/cli
       - name: Login to Architect Cloud
         run: architect login -e ${{ secrets.ARCHITECT_EMAIL }} -p ${{ secrets.ARCHITECT_PASSWORD }} # These secrets were created on your behalf
       - name: Create env if not exists
-        run: architect environment:create ${{ env.PREVIEW_TAG }} --cluster ${{ env.CLUSTER_NAME }} ${{ env.ENVIRONMENT_TTL }} || exit 0
+        run: architect environment:create ${{ env.PREVIEW_TAG }} --cluster ${{ env.CLUSTER_NAME }} ${{ env.ENVIRONMENT_TTL }}
       - name: Register and deploy component
         run: architect deploy --auto-approve -e ${{ env.PREVIEW_TAG }} ${{ env.COMPONENT_FILE_PATH }}
